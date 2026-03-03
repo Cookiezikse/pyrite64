@@ -467,11 +467,11 @@ namespace ImTable
   bool typedInput(T *value)
   {
     if constexpr (std::is_same_v<T, float>) {
-      return ImGui::InputFloat("##", value);
+      return ImGui::DragFloat("##", value, 0.1f);
     } else if constexpr (std::is_same_v<T, bool>) {
       return ImGui::Checkbox("##", value);
     } else if constexpr (std::is_same_v<T, int>) {
-      return ImGui::InputInt("##", value);
+      return ImGui::DragInt("##", value);
     } else if constexpr (std::is_same_v<T, uint32_t>) {
       return ImGui::InputScalar("##", ImGuiDataType_U32, value);
     } else if constexpr (std::is_same_v<T, uint16_t>) {
@@ -479,13 +479,13 @@ namespace ImTable
     } else if constexpr (std::is_same_v<T, uint8_t>) {
       return ImGui::InputScalar("##", ImGuiDataType_U8, value);
     } else if constexpr (std::is_same_v<T, glm::vec3>) {
-      return ImGui::InputFloat3("##", glm::value_ptr(*value));
+      return ImGui::DragFloat3("##", glm::value_ptr(*value), 0.1f);
     } else if constexpr (std::is_same_v<T, glm::vec4>) {
       return ImGui::ColorEdit4("##", glm::value_ptr(*value), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
     } else if constexpr (std::is_same_v<T, glm::quat>) {
-      return ImGui::InputFloat4("##", glm::value_ptr(*value));
+      return ImGui::DragFloat4("##", glm::value_ptr(*value), 0.1f);
     } else if constexpr (std::is_same_v<T, glm::ivec2>) {
-      return ImGui::InputInt2("##", glm::value_ptr(*value));
+      return ImGui::DragInt2("##", glm::value_ptr(*value));
     } else if constexpr (std::is_same_v<T, std::string>) {
       return ImGui::InputText("##", value);
     } else {
