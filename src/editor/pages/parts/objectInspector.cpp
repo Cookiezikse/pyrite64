@@ -325,11 +325,14 @@ void Editor::ObjectInspector::draw() {
         if (srcObj->linkedScale) 
         {
           float ratio = 1.0f;
-          if (scaleBefore.x != 0)      ratio = srcObj->scale.value.x / scaleBefore.x;
-          else if (scaleBefore.y != 0) ratio = srcObj->scale.value.y / scaleBefore.y;
-          else if (scaleBefore.z != 0) ratio = srcObj->scale.value.z / scaleBefore.z;
+          if      (srcObj->scale.value.x != scaleBefore.x && scaleBefore.x != 0) ratio = srcObj->scale.value.x / scaleBefore.x;
+          else if (srcObj->scale.value.y != scaleBefore.y && scaleBefore.y != 0) ratio = srcObj->scale.value.y / scaleBefore.y;
+          else if (srcObj->scale.value.z != scaleBefore.z && scaleBefore.z != 0) ratio = srcObj->scale.value.z / scaleBefore.z;
 
-          srcObj->scale.value = scaleBefore * ratio;
+          if (scaleBefore.x + scaleBefore.y + scaleBefore.z == 0)
+            srcObj->scale.value = glm::vec3(srcObj->scale.value.x + srcObj->scale.value.y + srcObj->scale.value.z);
+          else 
+            srcObj->scale.value = scaleBefore * ratio;
         }
       }
       // Linked Scale button
