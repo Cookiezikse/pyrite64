@@ -709,10 +709,15 @@ void Editor::Viewport3D::draw()
         obj->pos.resolve(obj->propOverrides) = pos;
       }
 
+      auto op = GIZMO_OPS[gizmoOp];
+      if(op == ImGuizmo::OPERATION::SCALE && obj->scalarScale) {
+        op = ImGuizmo::OPERATION::SCALE_X;
+      }
+
       if(ImGuizmo::Manipulate(
         glm::value_ptr(uniGlobal.cameraMat),
         glm::value_ptr(uniGlobal.projMat),
-        GIZMO_OPS[gizmoOp],
+        op,
         isTransWorld ? ImGuizmo::MODE::WORLD : ImGuizmo::MODE::LOCAL,
         glm::value_ptr(gizmoMat),
         nullptr,

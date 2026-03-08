@@ -4,6 +4,8 @@
 */
 #include "helper.h"
 
+#include "../../context.h"
+
 namespace
 {
   constexpr ImVec4 COLOR_NONE{0,0,0,0};
@@ -21,6 +23,7 @@ bool ImGui::IconButton(const char* label, const ImVec2 &labelSize, const ImVec4 
   bool hovered = IsMouseHoveringRect(min, max);
   bool clicked = IsMouseClicked(ImGuiMouseButton_Left) && hovered;
 
+  if(hovered)SetMouseCursor(ImGuiMouseCursor_Hand);
   PushStyleColor(ImGuiCol_Text,
     hovered ? GetStyleColorVec4(ImGuiCol_DragDropTarget) : color
   );
@@ -34,6 +37,26 @@ bool ImGui::IconButton(const char* label, const ImVec2 &labelSize, const ImVec4 
 
   PopStyleColor(4);
   return clicked;
+}
+
+bool ImGui::rotationInput(glm::quat &quat)
+{
+  if(ctx.prefs.showRotAsEuler)
+  {
+    auto orgRot = glm::normalize(quat);
+    glm::vec3 euler = glm::degrees(glm::eulerAngles(orgRot));
+
+    InputFloat3("##RotEuler", glm::value_ptr(euler));
+    // onl apply after we accept (enter or blur), otherwise any potential gimbal lock will
+    // mess up values since imgui still pins the currently active euler angle.
+    if(IsItemDeactivatedAfterEdit()) {
+      quat = glm::normalize(glm::quat(glm::radians(euler)));
+      return true;
+    }
+    return false;
+  }
+
+  return InputFloat4("##", glm::value_ptr(quat));
 }
 
 bool ImTable::addKeybind(const std::string &name, ImGuiKeyChord &chord, ImGuiKeyChord defaultValue, bool isChord) {

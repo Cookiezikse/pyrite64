@@ -36,6 +36,7 @@ void Editor::Preferences::load()
     renderFactorAA = doc.value("renderFactorAA", DEF.renderFactorAA);
     useVSync = doc.value("useVSync", DEF.useVSync);
     fpsLimit = doc.value("fpsLimit", DEF.fpsLimit);
+    showRotAsEuler = doc.value("showRotAsEuler", DEF.showRotAsEuler);
   } else {
     applyKeymapPreset();
   }
@@ -54,6 +55,7 @@ void Editor::Preferences::save()
     .set("renderFactorAA", renderFactorAA)
     .set("useVSync", useVSync)
     .set("fpsLimit", fpsLimit)
+    .set("showRotAsEuler", showRotAsEuler)
     .toString();
   auto prefPath = getPrefsPath();
   printf("Saving prefs to %s\n", prefPath.c_str());

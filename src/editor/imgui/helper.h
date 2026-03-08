@@ -129,6 +129,7 @@ namespace ImGui
     return changed;
   }
 
+  bool rotationInput(glm::quat &quat);
 }
 
 namespace ImTable
@@ -485,7 +486,7 @@ namespace ImTable
     } else if constexpr (std::is_same_v<T, glm::vec4>) {
       return ImGui::ColorEdit4("##", glm::value_ptr(*value), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
     } else if constexpr (std::is_same_v<T, glm::quat>) {
-      return ImGui::InputFloat4("##", glm::value_ptr(*value));
+      ImGui::rotationInput(*value);
     } else if constexpr (std::is_same_v<T, glm::ivec2>) {
       return ImGui::InputInt2("##", glm::value_ptr(*value));
     } else if constexpr (std::is_same_v<T, std::string>) {

@@ -19,6 +19,7 @@ namespace Editor
     float renderFactorAA = 1.0f;
     bool useVSync = false;
     int fpsLimit = 60;
+    bool showRotAsEuler = false;
 
     void load();
     void save();

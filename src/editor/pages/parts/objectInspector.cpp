@@ -11,6 +11,8 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+
+#include "imgui_internal.h"
 #include "../../imgui/helper.h"
 #include "../../../context.h"
 #include "../../../project/component/components.h"
@@ -315,13 +317,61 @@ void Editor::ObjectInspector::draw() {
     }
   }
 
-  if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-    if (ImTable::start("Transform", obj.get())) {
+  if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+  {
+    if(ImTable::start("Transform", obj.get()))
+    {
       ImTable::addObjProp("Pos", srcObj->pos);
-      ImTable::addObjProp("Scale", srcObj->scale);
+
+      if(srcObj->scalarScale)
+      {
+        ImTable::add("Scale");
+        auto &scale = srcObj->scale.resolve(*obj);
+        if(ImGui::InputFloat("##ScaleScalar", &scale.x))
+        {
+          scale.y = scale.z = scale.x;
+          UndoRedo::getHistory().markChanged("Edit Scale");
+        }
+      } else {
+        ImTable::addObjProp("Scale", srcObj->scale);
+      }
+
+      // icon to toggle between XYZ and scalar scale
+      ImGui::SameLine();
+      ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 32_px);
+      if(ImGui::IconButton(srcObj->scalarScale ? ICON_MDI_LINK_VARIANT : ICON_MDI_LINK_VARIANT_OFF, {24_px, 24_px})) {
+        ImGui::ClearActiveID();
+        srcObj->scalarScale = !srcObj->scalarScale;
+      }
+      ImGui::SetItemTooltip(srcObj->scalarScale
+        ? "Change to XYZ Scale"
+        : "Change to Uniform Scale"
+      );
+
       ImTable::addObjProp("Rot", srcObj->rot);
+
+      // icon to toggle between quaternion and euler
+      ImGui::SameLine();
+      ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 32_px);
+      if(ImGui::IconButton(ctx.prefs.showRotAsEuler ? ICON_MDI_AXIS_Z_ROTATE_CLOCKWISE : ICON_MDI_SPHERE, {24_px, 24_px})) {
+        ImGui::ClearActiveID();
+        ctx.prefs.showRotAsEuler = !ctx.prefs.showRotAsEuler;
+        ctx.prefs.save();
+      }
+      ImGui::SetItemTooltip(ctx.prefs.showRotAsEuler
+        ? "Change to Quaternion"
+        : "Change to Euler (degrees)"
+      );
+
       ImTable::end();
     }
+  }
+
+  // enforce single scale
+  if(srcObj->scalarScale)
+  {
+    auto &scale = srcObj->scale.resolve(srcObj->propOverrides);
+    scale.y = scale.z = scale.x;
   }
 
   uint64_t compDelUUID = 0;
