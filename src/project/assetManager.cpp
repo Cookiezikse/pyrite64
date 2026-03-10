@@ -284,7 +284,7 @@ void Project::AssetManager::reloadEntry(AssetManagerEntry &entry, const std::str
     case FileType::MODEL_3D:
     {
       try{
-        T3DM::config = {
+        T3DM::Config config{
           .globalScale = (float)entry.conf.baseScale,
           .animSampleRate = 60,
           //.ignoreMaterials = args.checkArg("--ignore-materials"),
@@ -293,9 +293,10 @@ void Project::AssetManager::reloadEntry(AssetManagerEntry &entry, const std::str
           .verbose = false,
           .assetPath = "assets/",
           .assetPathFull = fs::absolute(project->getPath() + "/assets").string(),
+          .projectPath = fs::path{project->getPath()},
         };
 
-        entry.t3dmData = T3DM::parseGLTF(path.c_str());
+        entry.t3dmData = T3DM::parseGLTF(path.c_str(), config);
         if (!entry.t3dmData.models.empty()) {
           if (!entry.mesh3D) {
             entry.mesh3D = std::make_shared<Renderer::N64Mesh>();

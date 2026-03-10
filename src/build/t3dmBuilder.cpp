@@ -76,7 +76,7 @@ bool Build::buildT3DMAssets(Project::Project &project, SceneCtx &sceneCtx)
     if(assetBuildNeeded(model, t3dmPath)) {
       fs::create_directories(t3dmDir);
 
-      T3DM::config = {
+      T3DM::Config config{
         .globalScale = (float)model.conf.baseScale,
         .animSampleRate = 60,
         //.ignoreMaterials = args.checkArg("--ignore-materials"),
@@ -85,13 +85,13 @@ bool Build::buildT3DMAssets(Project::Project &project, SceneCtx &sceneCtx)
         .verbose = false,
         .assetPath = "assets/",
         .assetPathFull = fs::absolute(project.getPath() + "/assets").string(),
+        .projectPath = projectPath,
       };
 
-      auto t3dm = T3DM::parseGLTF(model.path.c_str());
+      auto t3dm = T3DM::parseGLTF(model.path.c_str(), config);
 
       std::vector<T3DM::CustomChunk> customChunks{};
-
-      T3DM::writeT3DM(t3dm, t3dmPath.string().c_str(), projectPath, customChunks);
+      T3DM::writeT3DM(config, t3dm, t3dmPath.string().c_str(), customChunks);
 
       int compr = (int)model.conf.compression - 1;
       if(compr < 0)compr = 1; // @TODO: pull default compression level
