@@ -430,6 +430,26 @@ void Editor::Scene::draw()
       UndoRedo::getHistory().redo();
     }
 
+    if (isCtrl && ImGui::IsKeyPressed(ImGuiKey_D)) {
+      Project::Scene* scene = ctx.project->getScenes().getLoadedScene();
+      if (scene) {
+        std::shared_ptr<Project::Object> obj = scene->getObjectByUUID(ctx.selObjectUUID);
+        auto added = scene->addObject(*obj->parent);
+        if (added) {
+          
+          for (int i = 0; i < obj->components.size(); i++)
+          {
+            added->addComponent(obj->components[i].id);
+          }
+          
+
+          ctx.setObjectSelection(added->uuid);
+        }
+        Editor::UndoRedo::getHistory().markChanged("Add Object");
+        // ctx.selObjectUUID
+      }
+    }
+
     // Preferences
     if (isCtrl && ImGui::IsKeyPressed(ImGuiKey_Period))preferencesOpen = true;
   }
